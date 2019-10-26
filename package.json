@@ -1,0 +1,18 @@
+{
+  "name": "photo-fixer",
+  "version": "0.0.1",
+  "description": "Fixing analog photos",
+  "main": "index.js",
+  "author": "Brent-T <brenttimmermans7@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "date-fns": "^2.6.0",
+    "exiftool-vendored": "^9.0.0",
+    "fs-extra": "^8.1.0",
+    "lodash.compact": "^3.0.1",
+    "lodash.flow": "^3.5.0",
+    "lodash.head": "^4.0.1",
+    "lodash.padstart": "^4.6.1",
+    "p-series": "^2.1.0"
+  }
+}
