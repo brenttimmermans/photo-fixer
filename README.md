@@ -1,3 +1,3 @@
 # 📷🔧 photo-fixer
 
-Fixing, ordening en organising for my fresh analog photos
+Fixing, ordening en organising my fresh analog photo scans
