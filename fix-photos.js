@@ -12,7 +12,7 @@ async function fixPhotos (dir, rollNumber, dateString) {
 	console.log('Starting fix photos')
 	console.log('---')
 
-	const outputDir = path.resolve(dir, 'output')
+	const outputDir = path.resolve(dir, rollNumber.toString())
 	fs.removeSync(outputDir)
 
 	console.log('Output directory cleaned')
