@@ -4,7 +4,7 @@ const exiftool = require("exiftool-vendored").exiftool
 const { parse, format, addSeconds } = require('date-fns')
 const flow = require('lodash.flow')
 const compact = require('lodash.compact')
-const head = require('lodash.head')
+const last = require('lodash.last')
 const padStart = require('lodash.padstart')
 const pSeries = require('p-series')
 
@@ -103,7 +103,7 @@ const sortFilesByIndex = (a, b) => getIndexFromName(a) - getIndexFromName(b)
 const getIndexFromName = name => flow(
 	splitOnLodash,
 	compact,
-	head,
+	last,
 	parseInt
 )(name)
 
