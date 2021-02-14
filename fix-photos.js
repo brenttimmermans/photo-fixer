@@ -8,7 +8,13 @@ const last = require('lodash.last')
 const padStart = require('lodash.padstart')
 const pSeries = require('p-series')
 
-async function fixPhotos (dir, rollNumber, dateString) {
+const DEFAULT_OPTIONS = {
+	reverse: false
+}
+
+async function fixPhotos (dir, rollNumber, dateString, opts = {}) {
+	const options = Object.assign({}, DEFAULT_OPTIONS, opts)
+
 	console.log('Starting fix photos')
 	console.log('---')
 
@@ -18,7 +24,7 @@ async function fixPhotos (dir, rollNumber, dateString) {
 	console.log('Output directory cleaned')
 
 	const files = readDirSync(dir)
-	const sortedFiles = files.sort(sortFilesByIndex)
+	const sortedFiles = files.sort(sortFn(options.reverse))
 
 	const date = parseDate(dateString)
 
@@ -83,7 +89,9 @@ const isNotHiddenFile = file => !file.startsWith('.')
  * ==============
  */
 
+const sortFn = reverse => reverse ? sortFilesByIndexReverse : sortFilesByIndex
 const sortFilesByIndex = (a, b) => getIndexFromName(a) - getIndexFromName(b)
+const sortFilesByIndexReverse = (a, b) => getIndexFromName(b) - getIndexFromName(a)
 
 /**
  * Filter for cleaning out all excessive characters in filename in
