@@ -10,8 +10,8 @@ const { argv } = yargs(process.argv)
       describe: 'folder containing the film scans',
       type: 'string'
     },
-    r: {
-      alias: 'roll',
+    n: {
+      alias: 'roll_number',
       demandOption: true,
       describe: 'film roll number',
       type: 'number'
@@ -21,12 +21,20 @@ const { argv } = yargs(process.argv)
       demandOption: true,
       describe: 'film roll date',
       type: 'string'
+    },
+    r: {
+      alias: 'reverse',
+      demandOption: false,
+      describe: 'reverse order',
+      type: 'boolean'
     }
   })
   .help('h')
   .alias('h', 'help')
   .usage('$0 path')
-  .example('$0 -i /Users/user/Pictures/some-film-scans-folder -r 72 -d 01/01/2020')
+  .example('$0 -i /Users/user/Pictures/some-film-scans-folder -n 72 -d 01/01/2020')
 
-const { input, roll, date } = argv
-fixPhotos(input, roll, date)
+const { input, roll_number, date, reverse } = argv
+const options = { reverse }
+
+fixPhotos(input, roll_number, date, options)
