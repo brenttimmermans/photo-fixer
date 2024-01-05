@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Fixing analog photos",
   "main": "index.js",
-  "author": "Brent-T <brenttimmermans7@gmail.com>",
+  "author": "brenttimmermans <brenttimmermans7@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "date-fns": "^2.6.0",
