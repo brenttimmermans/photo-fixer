@@ -28,6 +28,13 @@ const { argv } = yargs(process.argv)
       describe: "reverse order",
       type: "boolean",
     },
+    o: {
+      alias: "offset",
+      demandOption: false,
+      describe: "offset in seconds to add the timestamp of every photo",
+      type: "number",
+      default: 0,
+    },
   })
   .help("h")
   .alias("h", "help")
@@ -36,7 +43,7 @@ const { argv } = yargs(process.argv)
     "$0 -i /Users/user/Pictures/some-film-scans-folder -n 72 -d 01/01/2020"
   );
 
-const { input, roll_number, date, reverse } = argv;
-const options = { reverse };
+const { input, roll_number, date, reverse, offset } = argv;
+const options = { reverse, offset };
 
 fixPhotos(input, roll_number, date, options);

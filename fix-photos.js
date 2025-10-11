@@ -10,6 +10,7 @@ const pSeries = require("p-series");
 
 const DEFAULT_OPTIONS = {
   reverse: false,
+  offset: 0,
 };
 
 async function fixPhotos(dir, rollNumber, dateString, opts = {}) {
@@ -52,7 +53,7 @@ async function fixPhotos(dir, rollNumber, dateString, opts = {}) {
 
     return exiftool
       .write(output, {
-        AllDates: createFileTimestamp(date, fileNumber),
+        AllDates: createFileTimestamp(date, fileNumber, options.offset),
       })
       .then(() => {
         console.log(`Success: ${input} -> ${output}`);
@@ -137,8 +138,8 @@ const createFilename = (rollNumber, number) => {
   return `IMG_${formattedRollNumber}_${formattedIndex}.jpg`;
 };
 
-const createFileTimestamp = (date, number) => {
-  return format(addSeconds(date, number), "yyyy:MM:dd HH:mm:ss");
+const createFileTimestamp = (date, number, offset) => {
+  return format(addSeconds(date, number + offset), "yyyy:MM:dd HH:mm:ss");
 };
 
 module.exports = fixPhotos;
