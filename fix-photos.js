@@ -1,72 +1,74 @@
-const fs = require('fs-extra')
-const path = require('path')
-const exiftool = require("exiftool-vendored").exiftool
-const { parse, format, addSeconds } = require('date-fns')
-const flow = require('lodash.flow')
-const compact = require('lodash.compact')
-const last = require('lodash.last')
-const padStart = require('lodash.padstart')
-const pSeries = require('p-series')
+const fs = require("fs-extra");
+const path = require("path");
+const exiftool = require("exiftool-vendored").exiftool;
+const { parse, format, addSeconds } = require("date-fns");
+const flow = require("lodash.flow");
+const compact = require("lodash.compact");
+const last = require("lodash.last");
+const padStart = require("lodash.padstart");
+const pSeries = require("p-series");
 
 const DEFAULT_OPTIONS = {
-	reverse: false
-}
+  reverse: false,
+};
 
-async function fixPhotos (dir, rollNumber, dateString, opts = {}) {
-	const options = Object.assign({}, DEFAULT_OPTIONS, opts)
+async function fixPhotos(dir, rollNumber, dateString, opts = {}) {
+  const options = Object.assign({}, DEFAULT_OPTIONS, opts);
 
-	console.log('Starting fix photos')
-	console.log('---')
+  console.log("Starting fix photos");
+  console.log("---");
 
-	const outputDir = path.resolve(dir, rollNumber.toString())
-	fs.removeSync(outputDir)
+  const outputDir = path.resolve(dir, rollNumber.toString());
+  fs.removeSync(outputDir);
 
-	console.log('Output directory cleaned')
+  console.log("Output directory cleaned");
 
-	const files = readDirSync(dir)
-	const sortedFiles = files.sort(sortFn(options.reverse))
+  const files = readDirSync(dir);
+  const sortedFiles = files.sort(sortFn(options.reverse));
 
-	const date = parseDate(dateString)
+  const date = parseDate(dateString);
 
-	console.log('---')
-	console.log('Input:')
-	console.log(`- directory: ${dir}`)
-	console.log(`- rollNumber: ${rollNumber}`)
-	console.log(`- date: ${dateString}`)
-	console.log('---')
+  console.log("---");
+  console.log("Input:");
+  console.log(`- directory: ${dir}`);
+  console.log(`- rollNumber: ${rollNumber}`);
+  console.log(`- date: ${dateString}`);
+  console.log("---");
 
-	console.log('Starting file fixing')
+  console.log("Starting file fixing");
 
-	const ops = sortedFiles.map((filename, index) => () => {
-		const fileNumber = index + 1
+  const ops = sortedFiles.map((filename, index) => () => {
+    const fileNumber = index + 1;
 
-		const input = path.resolve(dir, filename)
-		const output = path.resolve(
-			outputDir,
-			createFilename(rollNumber, fileNumber)
-		)
+    const input = path.resolve(dir, filename);
+    const output = path.resolve(
+      outputDir,
+      createFilename(rollNumber, fileNumber)
+    );
 
-		fs.copySync(input, output)
+    fs.copySync(input, output);
 
-		console.log(`Fixing: ${input}`)
+    console.log(`Fixing: ${input}`);
 
-		return exiftool.write(output, {
-			AllDates: createFileTimestamp(date, fileNumber)
-		}).then(() => {
-			console.log(`Success: ${input} -> ${output}`)
-			fs.removeSync(`${output}_original`)
-		})
-		.catch(() => {
-			console.log(`Error: ${input}`)
-		})
-	})
+    return exiftool
+      .write(output, {
+        AllDates: createFileTimestamp(date, fileNumber),
+      })
+      .then(() => {
+        console.log(`Success: ${input} -> ${output}`);
+        fs.removeSync(`${output}_original`);
+      })
+      .catch(() => {
+        console.log(`Error: ${input}`);
+      });
+  });
 
-	return pSeries(ops)
-		.then(() => {
-			console.log('Success: all files fixed')
-			process.exit(0)
-		})
-		.catch(() => console.log('Error: not all files were fixed'))
+  return pSeries(ops)
+    .then(() => {
+      console.log("Success: all files fixed");
+      process.exit(0);
+    })
+    .catch(() => console.log("Error: not all files were fixed"));
 }
 
 /**
@@ -76,12 +78,11 @@ async function fixPhotos (dir, rollNumber, dateString, opts = {}) {
  */
 
 // Get list of all non-hidden files in a directory
-const readDirSync = dir => {
-	return fs.readdirSync(dir)
-		.filter(isNotHiddenFile)
-}
+const readDirSync = (dir) => {
+  return fs.readdirSync(dir).filter(isNotHiddenFile);
+};
 
-const isNotHiddenFile = file => !file.startsWith('.')
+const isNotHiddenFile = (file) => !file.startsWith(".");
 
 /**
  * ==============
@@ -89,9 +90,11 @@ const isNotHiddenFile = file => !file.startsWith('.')
  * ==============
  */
 
-const sortFn = reverse => reverse ? sortFilesByIndexReverse : sortFilesByIndex
-const sortFilesByIndex = (a, b) => getIndexFromName(a) - getIndexFromName(b)
-const sortFilesByIndexReverse = (a, b) => getIndexFromName(b) - getIndexFromName(a)
+const sortFn = (reverse) =>
+  reverse ? sortFilesByIndexReverse : sortFilesByIndex;
+const sortFilesByIndex = (a, b) => getIndexFromName(a) - getIndexFromName(b);
+const sortFilesByIndexReverse = (a, b) =>
+  getIndexFromName(b) - getIndexFromName(a);
 
 /**
  * Filter for cleaning out all excessive characters in filename in
@@ -108,14 +111,10 @@ const sortFilesByIndexReverse = (a, b) => getIndexFromName(b) - getIndexFromName
  * 	'12A_0320.jpg'
  * ]
  */
-const getIndexFromName = name => flow(
-	splitOnLodash,
-	compact,
-	last,
-	parseInt
-)(name)
+const getIndexFromName = (name) =>
+  flow(splitOnLodash, compact, last, parseInt)(name);
 
-const splitOnLodash = string => string.split('_')
+const splitOnLodash = (string) => string.split("_");
 
 /**
  * ==============
@@ -123,7 +122,7 @@ const splitOnLodash = string => string.split('_')
  * ==============
  */
 
-const parseDate = string => parse(string, 'dd/MM/yyyy', new Date())
+const parseDate = (string) => parse(string, "dd/MM/yyyy", new Date());
 
 /**
  * ==============
@@ -132,17 +131,14 @@ const parseDate = string => parse(string, 'dd/MM/yyyy', new Date())
  */
 
 const createFilename = (rollNumber, number) => {
-	const formattedRollNumber = padStart(rollNumber, 3, 0)
-	const formattedIndex = padStart(number, 4, 0)
+  const formattedRollNumber = padStart(rollNumber, 3, 0);
+  const formattedIndex = padStart(number, 4, 0);
 
-	return `IMG_${formattedRollNumber}_${formattedIndex}.jpg`
-}
+  return `IMG_${formattedRollNumber}_${formattedIndex}.jpg`;
+};
 
 const createFileTimestamp = (date, number) => {
-	return format(
-		addSeconds(date, number),
-		'yyyy:MM:dd HH:mm:ss'
-	)
-}
+  return format(addSeconds(date, number), "yyyy:MM:dd HH:mm:ss");
+};
 
-module.exports = fixPhotos
+module.exports = fixPhotos;

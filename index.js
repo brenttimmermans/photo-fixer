@@ -1,1 +1,1 @@
-module.exports = require('./fix-photos')
+module.exports = require("./fix-photos");
